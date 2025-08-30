@@ -133,11 +133,33 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header with Finderly branding */}
       <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.phoneButton}
+          onPress={() => navigation.navigate('Contact')}
+          accessibilityLabel="Contact support"
+        >
+          <Image 
+            source={require('../../assets/phone-icon.jpeg')} 
+            style={styles.phoneIcon}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
         <Image 
           source={require('../../assets/finderly-text-icon.jpg')} 
           style={styles.headerIcon}
           resizeMode="contain"
         />
+        <TouchableOpacity 
+          style={styles.infoButton}
+          onPress={() => navigation.navigate('HowItWorks')}
+          accessibilityLabel="How Finderly works"
+        >
+          <Image 
+            source={require('../../assets/info-button.jpeg')} 
+            style={styles.infoButtonIcon}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
       </View>
 
       {/* Scrollable content area */}
@@ -235,15 +257,47 @@ const styles = StyleSheet.create({
   
   // Header styling for Finderly branding
   header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     paddingTop: 20,
     paddingBottom: 16,
+    paddingHorizontal: 24,
+    minHeight: 80,
+  },
+  
+  // Phone button styling
+  phoneButton: {
+    padding: 4,
+    width: 60,
+    alignItems: "center",
+    marginTop: -20,
+  },
+  
+  // Phone icon styling
+  phoneIcon: {
+    width: 60,
+    height: 60,
   },
   
   // Header icon styling
   headerIcon: {
-    width: 120,
-    height: 40,
+    width: 210,
+    height: 70,
+    flex: 1,
+    textAlign: "center",
+  },
+  
+  // Info button styling
+  infoButton: {
+    padding: 4,
+    marginTop: -20,
+  },
+  
+  // Info button icon styling
+  infoButtonIcon: {
+    width: 60,
+    height: 60,
   },
   
   // ScrollView styling
@@ -260,7 +314,6 @@ const styles = StyleSheet.create({
   // Welcome section styling
   welcomeSection: {
     alignItems: "center",
-    paddingTop: 40,
     marginBottom: 40,
   },
   
@@ -274,6 +327,8 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
   },
+  
+
   
   // Main title styling
   title: {

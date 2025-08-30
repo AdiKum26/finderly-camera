@@ -28,6 +28,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
 import CameraScreen from "./src/screens/CameraScreen";
 import { PhotoReviewScreen } from "./src/screens/PhotoReviewScreen";
+import HowItWorksScreen from "./src/screens/HowItWorksScreen";
+import ContactScreen from "./src/screens/ContactScreen";
 
 // Expo utilities
 import { StatusBar } from "expo-status-bar";
@@ -48,6 +50,8 @@ export type RootStackParamList = {
   Home: { photoUri?: string } | undefined;
   Camera: undefined;
   PhotoReview: { photoUri: string };
+  HowItWorks: undefined;
+  Contact: undefined;
 };
 
 /**
@@ -115,6 +119,26 @@ export default function App() {
           options={{ 
             headerShown: false, // Custom header implemented in component
             // Allow back gesture for natural navigation
+            gestureEnabled: true,
+          }} 
+        />
+        
+        {/* How It Works screen - app explanation */}
+        <Stack.Screen 
+          name="HowItWorks" 
+          component={HowItWorksScreen} 
+          options={{ 
+            headerShown: false,
+            gestureEnabled: true,
+          }} 
+        />
+        
+        {/* Contact screen - support and contact information */}
+        <Stack.Screen 
+          name="Contact" 
+          component={ContactScreen} 
+          options={{ 
+            headerShown: false,
             gestureEnabled: true,
           }} 
         />
