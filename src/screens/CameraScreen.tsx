@@ -38,7 +38,7 @@ export default function CameraScreen() {
   // Navigation hook for returning to previous screen
   const navigation = useNavigation<any>();
   
-  // Custom hook for managing camera and microphone permissions
+  // Custom hook for managing camera permissions
   const { granted, cameraStatus, request } = usePermissions();
   
   // Camera device state management

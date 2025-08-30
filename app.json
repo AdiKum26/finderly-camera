@@ -17,7 +17,6 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to take photos.",
-        "NSMicrophoneUsageDescription": "This app uses the microphone for video recording.",
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select existing photos."
       },
       "bundleIdentifier": "com.yourname.finderlycamera"
@@ -30,9 +29,7 @@
       "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
         "android.permission.READ_MEDIA_IMAGES",
-        "android.permission.READ_MEDIA_VIDEO",
         "android.permission.READ_EXTERNAL_STORAGE"
       ],
       "package": "com.yourname.finderlycamera"

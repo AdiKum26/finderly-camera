@@ -1,8 +1,8 @@
 /**
  * usePermissions Hook
  * 
- * Custom React hook for managing camera and microphone permissions
- * using react-native-vision-camera. Provides a clean interface for
+ * Custom React hook for managing camera and photo library permissions
+ * using react-native-vision-camera and expo-image-picker. Provides a clean interface for
  * permission status checking and requesting user consent.
  * 
  * Features:
@@ -35,22 +35,20 @@ import { Camera, CameraPermissionStatus } from "react-native-vision-camera";
  * 
  * @interface PermissionsState
  * @property {CameraPermissionStatus} cameraStatus - Current camera permission status
- * @property {CameraPermissionStatus} micStatus - Current microphone permission status
  * @property {boolean} granted - Whether camera permission is granted
- * @property {() => Promise<void>} request - Function to request permissions
+ * @property {() => Promise<void>} request - Function to request camera permission
  */
 interface PermissionsState {
   cameraStatus: CameraPermissionStatus;
-  micStatus: CameraPermissionStatus;
   granted: boolean;
   request: () => Promise<void>;
 }
 
 /**
- * usePermissions - Camera and microphone permission management hook
+ * usePermissions - Camera permission management hook
  * 
- * This hook provides a comprehensive solution for handling device permissions
- * in camera applications. It automatically detects current permission states
+ * This hook provides a comprehensive solution for handling camera permissions
+ * in photo capture applications. It automatically detects current permission states
  * and provides methods for requesting user consent when needed.
  * 
  * The hook follows React best practices by using useEffect for side effects
@@ -68,9 +66,8 @@ interface PermissionsState {
  * ```
  */
 export function usePermissions(): PermissionsState {
-  // Local state for tracking permission statuses
+  // Local state for tracking camera permission status
   const [cameraStatus, setCameraStatus] = useState<CameraPermissionStatus>("not-determined");
-  const [micStatus, setMicStatus] = useState<CameraPermissionStatus>("not-determined");
 
   /**
    * Effect hook to initialize permission statuses on component mount
@@ -83,64 +80,54 @@ export function usePermissions(): PermissionsState {
     // Immediately invoked async function to check permissions
     (async () => {
       try {
-        // Query current permission statuses from device
+        // Query current camera permission status from device
         const cameraPermission = await Camera.getCameraPermissionStatus();
-        const microphonePermission = await Camera.getMicrophonePermissionStatus();
         
-        // Update local state with current permission values
+        // Update local state with current permission value
         setCameraStatus(cameraPermission);
-        setMicStatus(microphonePermission);
       } catch (error) {
         // Gracefully handle permission checking errors
-        console.warn("Failed to check permission status:", error);
+        console.warn("Failed to check camera permission status:", error);
         
-        // Set default states on error
+        // Set default state on error
         setCameraStatus("not-determined");
-        setMicStatus("not-determined");
       }
     })();
   }, []); // Empty dependency array ensures effect runs only once
 
   /**
-   * Request permissions from the user
+   * Request camera permission from the user
    * 
-   * This function handles the permission request flow for both camera
-   * and microphone access. It updates the local state based on user
-   * responses and provides a unified interface for permission management.
+   * This function handles the permission request flow for camera access.
+   * It updates the local state based on user responses and provides
+   * a unified interface for permission management.
    * 
-   * @returns {Promise<void>} Promise that resolves when permissions are processed
+   * @returns {Promise<void>} Promise that resolves when permission is processed
    * 
    * @throws {Error} May throw if permission request fails
    */
   const request = async (): Promise<void> => {
     try {
-      // Request camera permission first (primary requirement)
+      // Request camera permission
       const cameraPermission = await Camera.requestCameraPermission();
       
-      // Request microphone permission (secondary requirement)
-      const microphonePermission = await Camera.requestMicrophonePermission();
-      
-      // Update local state with user's permission decisions
+      // Update local state with user's permission decision
       setCameraStatus(cameraPermission);
-      setMicStatus(microphonePermission);
     } catch (error) {
       // Handle permission request failures gracefully
-      console.error("Failed to request permissions:", error);
+      console.error("Failed to request camera permission:", error);
       
       // Set denied status on error to prevent infinite retry loops
       setCameraStatus("denied");
-      setMicStatus("denied");
     }
   };
 
   // Computed value indicating if camera access is available
-  // Microphone is optional for photo capture, so only camera status matters
   const granted = cameraStatus === "granted";
 
   // Return permission state object for component consumption
   return { 
     cameraStatus, 
-    micStatus, 
     granted, 
     request 
   };
