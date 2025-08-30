@@ -230,7 +230,6 @@ export default function HomeScreen() {
               style={styles.aiAnalysisButton}
               onPress={handleAIAnalysis}
             >
-              <Text style={styles.aiAnalysisButtonIcon}>🤖</Text>
               <Text style={styles.aiAnalysisButtonText}>AI Analysis</Text>
             </TouchableOpacity>
           </View>
@@ -546,7 +545,6 @@ const styles = StyleSheet.create({
   // AI Analysis button styling
   aiAnalysisButton: {
     backgroundColor: "#8B5CF6", // Purple theme consistent with app design
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
@@ -558,12 +556,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
-  },
-  
-  // AI Analysis button icon styling
-  aiAnalysisButtonIcon: {
-    fontSize: 20,
-    marginRight: 8,
   },
   
   // AI Analysis button text styling

@@ -1,6 +1,12 @@
 /**
  * Created by Aditya Kumar on 30/08/2025
  * Documented clearly for understanding purposes
+ * 
+ * ⚠️ SECURITY WARNING: 
+ * - This file contains a placeholder API key
+ * - You MUST replace 'YOUR_GOOGLE_CLOUD_VISION_API_KEY_HERE' with your actual API key
+ * - Never commit your real API key to version control
+ * - See API_CONFIG_TEMPLATE.md for setup instructions
  */
 
 

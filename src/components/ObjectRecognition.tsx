@@ -126,7 +126,7 @@ const ObjectRecognition: React.FC<ObjectRecognitionProps> = ({
         ) : (
           // Show action text when ready for user interaction
           <Text style={styles.analyzeButtonText}>
-            🔍 Analyze Image
+            Analyze Image
           </Text>
         )}
       </TouchableOpacity>
