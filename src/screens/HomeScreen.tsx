@@ -2,29 +2,46 @@
  * HomeScreen Component
  * 
  * Main landing screen that displays welcome message, camera access button,
- * and preview of the most recently captured photo.
+ * and preview of the most recently captured photo. Features a clean,
+ * simple design inspired by the original Finderly app aesthetic.
  * 
  * Features:
- * - Welcome interface with clear call-to-action
- * - Navigation to camera screen
- * - Photo preview display with fallback message
- * - Responsive layout with proper spacing
+ * - Clean, minimal interface design
+ * - Professional purple color scheme
+ * - Simple card-based layout
+ * - Restored photo preview functionality
+ * - Clear call-to-action for camera access
+ * - Scrollable content for full photo preview
+ * - Action sheet for photo source selection
+ * - Photo gallery access for existing photos
  * 
  * @author Aditya Kumar
  * @created 2024
  * @version 1.0.0
  */
 
+import React, { useState } from "react";
 import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 import type { RootStackParamList } from "../../App";
-import { View, Text, Image, StyleSheet, Button, SafeAreaView } from "react-native";
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  Image, 
+  SafeAreaView, 
+  ScrollView, 
+  Modal,
+  Alert
+} from "react-native";
+import * as ImagePicker from 'expo-image-picker';
 
 /**
- * HomeScreen - Main application entry point
+ * HomeScreen - Main application entry point with clean design
  * 
  * This component serves as the primary interface for users to access
- * camera functionality and view captured photos. It demonstrates
- * proper TypeScript usage with navigation types and conditional rendering.
+ * camera functionality and view captured photos. It features a clean,
+ * minimal design that prioritizes usability and visual clarity.
  * 
  * @returns JSX.Element - Rendered home screen component
  */
@@ -36,83 +53,413 @@ export default function HomeScreen() {
   const route = useRoute<RouteProp<RootStackParamList, "Home">>();
   const photoUri = route.params?.photoUri;
 
+  // State for action sheet modal
+  const [isActionSheetVisible, setIsActionSheetVisible] = useState(false);
+
+  /**
+   * Shows the action sheet with photo source options
+   */
+  const showActionSheet = () => {
+    setIsActionSheetVisible(true);
+  };
+
+  /**
+   * Hides the action sheet
+   */
+  const hideActionSheet = () => {
+    setIsActionSheetVisible(false);
+  };
+
   /**
    * Handles navigation to the camera screen
    * Uses the native stack navigator to push the camera view
    */
   const handleOpenCamera = () => {
+    hideActionSheet();
     navigation.navigate("Camera");
+  };
+
+  /**
+   * Handles selection from photo gallery
+   * Opens the device's photo library for photo selection
+   */
+  const handlePhotoGallery = async () => {
+    hideActionSheet();
+    
+    try {
+      // Request permission to access photo library
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          "Permission Required",
+          "Sorry, we need camera roll permissions to access your photo gallery.",
+          [{ text: "OK", style: "default" }]
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const selectedPhoto = result.assets[0];
+        
+        // Navigate to home with the selected photo
+        navigation.navigate("Home", { photoUri: selectedPhoto.uri });
+      }
+    } catch (error) {
+      console.error("Error accessing photo gallery:", error);
+      Alert.alert(
+        "Error",
+        "Failed to access photo gallery. Please try again.",
+        [{ text: "OK", style: "default" }]
+      );
+    }
+  };
+
+  /**
+   * Handles cancel action
+   */
+  const handleCancel = () => {
+    hideActionSheet();
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Welcome section with clear user guidance */}
-      <Text style={styles.title}>Welcome</Text>
-      <Text style={styles.subtitle}>
-        Tap below to open the camera and take a photo.
-      </Text>
-      
-      {/* Primary action button to access camera functionality */}
-      <Button 
-        title="Open Camera" 
-        onPress={handleOpenCamera}
-        accessibilityLabel="Navigate to camera screen"
-      />
-
-      {/* Conditional rendering for photo preview or empty state */}
-      {photoUri ? (
-        <View style={styles.previewWrap}>
-          <Text style={styles.previewTitle}>Last photo</Text>
-          <Image 
-            source={{ uri: photoUri }} 
-            style={styles.preview} 
-            resizeMode="cover"
-            accessibilityLabel="Preview of captured photo"
-          />
+      {/* Scrollable content area */}
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Welcome section */}
+        <View style={styles.welcomeSection}>
+          <View style={styles.iconContainer}>
+            <Text style={styles.icon}>🏠</Text>
+          </View>
+          <Text style={styles.title}>Find it, snap it, fix it</Text>
+          <Text style={styles.subtitle}>
+            Finderly analyzes your photo or video, provides DIY solutions, 
+            and connects you with the right professional.
+          </Text>
         </View>
-      ) : (
-        <Text style={styles.emptyStateText}>
-          No photo yet
-        </Text>
-      )}
+
+        {/* Camera action section */}
+        <View style={styles.cameraSection}>
+          <View style={styles.cameraPreview}>
+            <View style={styles.cameraPlaceholder}>
+              <Text style={styles.cameraIcon}>📱</Text>
+              <Text style={styles.cameraText}>Camera Ready</Text>
+            </View>
+            <TouchableOpacity 
+              style={styles.cameraButton}
+              onPress={showActionSheet}
+              accessibilityLabel="Choose photo source"
+            >
+              <Text style={styles.cameraButtonIcon}>🔍</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.sectionTitle}>Identify Your Issue</Text>
+          <Text style={styles.sectionDescription}>
+            Snap a photo or record video of your repair issue and Finderly will spot the problem.
+          </Text>
+        </View>
+
+        {/* Photo preview section (when available) */}
+        {photoUri && (
+          <View style={styles.photoSection}>
+            <View style={styles.photoContainer}>
+              <Image 
+                source={{ uri: photoUri }} 
+                style={styles.photoPreview} 
+                resizeMode="cover"
+                accessibilityLabel="Preview of captured photo"
+              />
+              <View style={styles.photoOverlay}>
+                <Text style={styles.photoOverlayText}>Photo Selected</Text>
+              </View>
+            </View>
+            <Text style={styles.sectionTitle}>Issue Identified</Text>
+            <Text style={styles.sectionDescription}>
+              Your photo has been selected. Review and analyze the issue for solutions.
+            </Text>
+          </View>
+        )}
+
+        {/* Bottom spacing to ensure photo preview is fully visible */}
+        <View style={styles.bottomSpacing} />
+      </ScrollView>
+
+      {/* Action Sheet Modal */}
+      <Modal
+        visible={isActionSheetVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={hideActionSheet}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={handleCancel}
+        >
+          <View style={styles.actionSheetContainer}>
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={handlePhotoGallery}
+            >
+              <Text style={styles.actionButtonText}>Photo Gallery</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={handleOpenCamera}
+            >
+              <Text style={styles.actionButtonText}>Camera</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.cancelButton}
+              onPress={handleCancel}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 }
 
-// Component-specific styles following React Native best practices
+// Clean, simple styling matching the reference design
 const styles = StyleSheet.create({
+  // Main container with white background
   container: { 
     flex: 1, 
-    padding: 20, 
-    gap: 16, 
-    alignItems: "center" 
+    backgroundColor: "#ffffff" 
   },
-  title: { 
-    fontSize: 24, 
-    fontWeight: "700" 
+  
+  // ScrollView styling
+  scrollView: {
+    flex: 1,
   },
-  subtitle: { 
-    fontSize: 14, 
-    color: "#666", 
-    textAlign: "center" 
+  
+  // ScrollView content container
+  scrollContent: {
+    padding: 24,
+    paddingBottom: 40, // Extra bottom padding for scroll
   },
-  previewWrap: { 
-    marginTop: 24, 
-    width: "100%", 
-    alignItems: "center" 
+  
+  // Welcome section styling
+  welcomeSection: {
+    alignItems: "center",
+    paddingTop: 20,
+    marginBottom: 40,
   },
-  previewTitle: { 
-    fontSize: 16, 
-    fontWeight: "600", 
-    marginBottom: 8 
+  
+  // Icon container
+  iconContainer: {
+    marginBottom: 16,
   },
-  preview: { 
-    width: "100%", 
-    height: 280, 
-    borderRadius: 12 
+  
+  // Large icon styling
+  icon: {
+    fontSize: 64,
   },
-  emptyStateText: { 
-    marginTop: 16, 
-    color: "#666" 
-  }
+  
+  // Main title styling
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#495057",
+    textAlign: "center",
+    marginBottom: 16,
+    lineHeight: 34,
+  },
+  
+  // Subtitle styling
+  subtitle: {
+    fontSize: 16,
+    color: "#6c757d",
+    textAlign: "center",
+    lineHeight: 24,
+    maxWidth: 300,
+  },
+  
+  // Camera section styling
+  cameraSection: {
+    alignItems: "center",
+    marginBottom: 40,
+  },
+  
+  // Camera preview container
+  cameraPreview: {
+    position: "relative",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  
+  // Camera placeholder styling
+  cameraPlaceholder: {
+    width: 280,
+    height: 160,
+    backgroundColor: "#f8f9fa",
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#dee2e6",
+    borderStyle: "dashed",
+  },
+  
+  // Camera icon in placeholder
+  cameraIcon: {
+    fontSize: 48,
+    color: "#6c757d",
+    marginBottom: 8,
+  },
+  
+  // Camera text in placeholder
+  cameraText: {
+    fontSize: 14,
+    color: "#6c757d",
+    fontWeight: "500",
+  },
+  
+  // Camera action button
+  cameraButton: {
+    position: "absolute",
+    bottom: -30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#6f42c1",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#6f42c1",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  
+  // Camera button icon
+  cameraButtonIcon: {
+    fontSize: 24,
+    color: "#ffffff",
+  },
+  
+  // Section title styling
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#495057",
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  
+  // Section description styling
+  sectionDescription: {
+    fontSize: 16,
+    color: "#6c757d",
+    textAlign: "center",
+    lineHeight: 24,
+    maxWidth: 300,
+  },
+  
+  // Photo section styling
+  photoSection: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  
+  // Photo container
+  photoContainer: {
+    position: "relative",
+    marginBottom: 24,
+  },
+  
+  // Photo preview styling
+  photoPreview: {
+    width: 280,
+    height: 200,
+    borderRadius: 16,
+  },
+  
+  // Photo overlay styling
+  photoOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(111, 66, 193, 0.9)",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+  },
+  
+  // Photo overlay text
+  photoOverlayText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  
+  // Bottom spacing to ensure content is fully scrollable
+  bottomSpacing: {
+    height: 20,
+  },
+
+  // Modal overlay styling
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
+  },
+
+  // Action sheet container styling
+  actionSheetContainer: {
+    backgroundColor: "#ffffff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 40, // Safe area padding
+  },
+
+  // Action button styling
+  actionButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+    alignItems: "center",
+  },
+
+  // Action button text styling
+  actionButtonText: {
+    fontSize: 18,
+    color: "#007AFF", // iOS blue color
+    fontWeight: "500",
+  },
+
+  // Cancel button styling
+  cancelButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    marginTop: 8,
+  },
+
+  // Cancel button text styling
+  cancelButtonText: {
+    fontSize: 18,
+    color: "#FF3B30", // iOS red color
+    fontWeight: "500",
+  },
 });

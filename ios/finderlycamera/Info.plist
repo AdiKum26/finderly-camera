@@ -49,6 +49,8 @@
     <string>This app uses the camera to take photos.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>This app uses the microphone for video recording.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to your photo library to select existing photos.</string>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
