@@ -131,6 +131,15 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header with Finderly branding */}
+      <View style={styles.header}>
+        <Image 
+          source={require('../../assets/finderly-text-icon.jpg')} 
+          style={styles.headerIcon}
+          resizeMode="contain"
+        />
+      </View>
+
       {/* Scrollable content area */}
       <ScrollView 
         style={styles.scrollView}
@@ -224,6 +233,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff" 
   },
   
+  // Header styling for Finderly branding
+  header: {
+    alignItems: "center",
+    paddingTop: 20,
+    paddingBottom: 16,
+  },
+  
+  // Header icon styling
+  headerIcon: {
+    width: 120,
+    height: 40,
+  },
+  
   // ScrollView styling
   scrollView: {
     flex: 1,
@@ -238,7 +260,7 @@ const styles = StyleSheet.create({
   // Welcome section styling
   welcomeSection: {
     alignItems: "center",
-    paddingTop: 20,
+    paddingTop: 40,
     marginBottom: 40,
   },
   
@@ -249,8 +271,8 @@ const styles = StyleSheet.create({
   
   // Icon styling for the finderly icon image
   icon: {
-    width: 64,
-    height: 64,
+    width: 80,
+    height: 80,
   },
   
   // Main title styling

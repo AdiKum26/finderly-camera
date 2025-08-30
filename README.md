@@ -51,18 +51,18 @@ A React Native mobile application that combines camera functionality with **AI-p
 ### Installation
 
 1. **Clone the repository**
-   ```bash
+```bash
    git clone https://github.com/AdiKum26/finderly-camera.git
-   cd finderly-camera
+cd finderly-camera
    ```
 
 2. **Install dependencies**
    ```bash
-   npm install
-   ```
+npm install
+```
 
 3. **Install dependencies**
-   ```bash
+```bash
    npm install
    ```
 
@@ -98,18 +98,18 @@ A React Native mobile application that combines camera functionality with **AI-p
    - Monitor API usage in Google Cloud Console
 
 5. **Start the development server**
-   ```bash
+```bash
    npx expo start
    ```
 
 6. **Run on device/simulator**
-   ```bash
+```bash
    # For iOS
    npx expo run:ios
    
    # For Android
-   npx expo run:android
-   ```
+npx expo run:android
+```
 
 ## 🔧 Configuration
 
