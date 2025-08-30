@@ -1,4 +1,9 @@
 /**
+ * Created by Aditya Kumar on 30/08/2025
+ * Documented clearly for understanding purposes
+ */
+
+/**
  * HomeScreen Component
  * 
  * Main landing screen that displays welcome message, camera access button,
@@ -14,10 +19,6 @@
  * - Scrollable content for full photo preview
  * - Action sheet for photo source selection
  * - Photo gallery access for existing photos
- * 
- * @author Aditya Kumar
- * @created 2024
- * @version 1.0.0
  */
 
 import React, { useState } from "react";
@@ -35,6 +36,7 @@ import {
   Alert
 } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
+import ObjectRecognition from '../components/ObjectRecognition';
 
 /**
  * HomeScreen - Main application entry point with clean design
@@ -55,6 +57,10 @@ export default function HomeScreen() {
 
   // State for action sheet modal
   const [isActionSheetVisible, setIsActionSheetVisible] = useState(false);
+  
+  // State for AI Analysis
+  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
+  const [imageBase64, setImageBase64] = useState<string | null>(null);
 
   /**
    * Shows the action sheet with photo source options
@@ -130,6 +136,35 @@ export default function HomeScreen() {
     hideActionSheet();
   };
 
+  /**
+   * Initiates the AI analysis process for the captured photo
+   * 
+   * This function converts the photo to Base64 format and prepares
+   * it for AI analysis. The conversion process ensures compatibility
+   * with the vision service API while maintaining image quality.
+   */
+  const handleAIAnalysis = async () => {
+    if (!photoUri) return;
+
+    try {
+      // Convert photo to Base64 for AI processing
+      const response = await fetch(photoUri);
+      const blob = await response.blob();
+      
+      // Create a FileReader to convert blob to Base64
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result as string;
+        setImageBase64(base64);
+        setShowAIAnalysis(true);
+      };
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      console.error('Error converting image to Base64:', error);
+      Alert.alert('Error', 'Failed to prepare image for analysis');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Scrollable content area */}
@@ -189,6 +224,15 @@ export default function HomeScreen() {
             <Text style={styles.sectionDescription}>
               Your photo has been selected. Review and analyze the issue for solutions.
             </Text>
+            
+            {/* AI Analysis Button */}
+            <TouchableOpacity
+              style={styles.aiAnalysisButton}
+              onPress={handleAIAnalysis}
+            >
+              <Text style={styles.aiAnalysisButtonIcon}>🤖</Text>
+              <Text style={styles.aiAnalysisButtonText}>AI Analysis</Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -231,6 +275,42 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
+      </Modal>
+
+      {/* AI Analysis Modal */}
+      <Modal
+        visible={showAIAnalysis}
+        animationType="slide"
+        presentationStyle="fullScreen"
+      >
+        <View style={styles.aiModalOverlay}>
+          <View style={styles.aiModalContainer}>
+            
+            {/* Modal Header */}
+            <View style={styles.aiModalHeader}>
+              <View style={styles.aiModalTitleContainer}>
+                <Text style={styles.aiModalTitle}>AI Object Recognition</Text>
+              </View>
+              <TouchableOpacity 
+                onPress={() => setShowAIAnalysis(false)}
+                style={styles.aiModalCloseButton}
+              >
+                <Text style={styles.aiModalCloseButtonText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* AI Analysis Content */}
+            {imageBase64 && (
+              <ObjectRecognition 
+                imageBase64={imageBase64}
+                photoUri={photoUri || undefined}
+                onAnalysisComplete={(results) => {
+                  console.log('Analysis complete:', results);
+                }}
+              />
+            )}
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -461,5 +541,92 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#FF3B30", // iOS red color
     fontWeight: "500",
+  },
+
+  // AI Analysis button styling
+  aiAnalysisButton: {
+    backgroundColor: "#8B5CF6", // Purple theme consistent with app design
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    borderRadius: 12,
+    marginHorizontal: 24,
+    marginBottom: 20,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  
+  // AI Analysis button icon styling
+  aiAnalysisButtonIcon: {
+    fontSize: 20,
+    marginRight: 8,
+  },
+  
+  // AI Analysis button text styling
+  aiAnalysisButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  
+  // AI Modal overlay styling for full-screen modal
+  aiModalOverlay: {
+    flex: 1,
+    backgroundColor: "#000000",
+  },
+  
+  // AI Modal container styling
+  aiModalContainer: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+  },
+  
+  // AI Modal header styling with proper spacing and layout
+  aiModalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 16,
+    paddingTop: 80, // Generous top padding to center the header
+    paddingBottom: 24, // Bottom padding for better separation
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+    backgroundColor: "#f8f9fa",
+    minHeight: 120, // Ensure consistent header height
+  },
+  
+  // AI Modal title container for proper centering
+  aiModalTitleContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  // AI Modal title styling with prominent appearance
+  aiModalTitle: {
+    fontSize: 20, // Slightly larger for better visibility
+    fontWeight: "700", // Bolder for better prominence
+    color: "#333333",
+    textAlign: "center", // Ensure center alignment
+  },
+
+  // AI Modal close button styling
+  aiModalCloseButton: {
+    padding: 12,
+    borderRadius: 20,
+    backgroundColor: "#f0f0f0",
+    alignSelf: "flex-start", // Align to top of header
+    marginLeft: 8, // Add left margin for spacing
+  },
+  
+  // AI Modal close button text styling
+  aiModalCloseButtonText: {
+    fontSize: 18,
+    color: "#333333",
+    fontWeight: "600",
   },
 });

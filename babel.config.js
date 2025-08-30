@@ -1,4 +1,9 @@
 /**
+ * Created by Aditya Kumar on 30/08/2025
+ * Documented clearly for understanding purposes
+ */
+
+/**
  * Babel Configuration for Finderly Camera
  * 
  * Babel configuration file that sets up the build pipeline for the
@@ -9,10 +14,6 @@
  * - Expo preset for React Native compatibility
  * - Reanimated plugin for advanced animations (MUST be last)
  * - Cache optimization for development builds
- * 
- * @author Aditya Kumar
- * @created 2024
- * @version 1.0.0
  */
 
 /**

@@ -1,4 +1,9 @@
 /**
+ * Created by Aditya Kumar on 30/08/2025
+ * Documented clearly for understanding purposes
+ */
+
+/**
  * CameraScreen Component
  * 
  * Full-screen camera interface that provides photo capture functionality
@@ -12,10 +17,6 @@
  * - Photo preview with confirmation
  * - Graceful permission handling
  * - Overlay UI with reticle guide
- * 
- * @author Aditya Kumar
- * @created 2024
- * @version 1.0.0
  */
 
 import { useRef, useState, useMemo } from "react";

@@ -1,13 +1,14 @@
 /**
+ * Created by Aditya Kumar on 30/08/2025
+ * Documented clearly for understanding purposes
+ */
+
+/**
  * Media Types and Interfaces
  * 
  * TypeScript type definitions for media-related functionality
  * in the Finderly Camera application. Provides type safety
  * for photo capture, storage, and display operations.
- * 
- * @author Aditya Kumar
- * @created 2024
- * @version 1.0.0
  */
 
 /**

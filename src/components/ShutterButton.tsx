@@ -1,4 +1,9 @@
 /**
+ * Created by Aditya Kumar on 30/08/2025
+ * Documented clearly for understanding purposes
+ */
+
+/**
  * ShutterButton Component
  * 
  * Reusable camera shutter button component that provides visual feedback
@@ -10,10 +15,6 @@
  * - Disabled state handling
  * - Accessibility support
  * - Consistent sizing and spacing
- * 
- * @author Aditya Kumar
- * @created 2024
- * @version 1.0.0
  */
 
 import { Pressable, StyleSheet, View } from "react-native";

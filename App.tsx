@@ -1,4 +1,9 @@
 /**
+ * Created by Aditya Kumar on 30/08/2025
+ * Documented clearly for understanding purposes
+ */
+
+/**
  * Finderly Camera - Main Application Component
  * 
  * Root component that sets up navigation, routing, and global app configuration.
@@ -10,10 +15,6 @@
  * - Type-safe navigation parameters
  * - Global status bar configuration
  * - Screen routing and navigation options
- * 
- * @author Aditya Kumar
- * @created 2024
- * @version 1.0.0
  */
 
 // Import gesture handler at the top level for proper touch handling

@@ -1,4 +1,9 @@
 /**
+ * Created by Aditya Kumar on 30/08/2025
+ * Documented clearly for understanding purposes
+ */
+
+/**
  * usePermissions Hook
  * 
  * Custom React hook for managing camera and photo library permissions
@@ -11,10 +16,6 @@
  * - Real-time permission state updates
  * - Type-safe permission status management
  * - Clean API for component integration
- * 
- * @author Aditya Kumar
- * @created 2024
- * @version 1.0.0
  */
 
 import { useEffect, useState } from "react";
