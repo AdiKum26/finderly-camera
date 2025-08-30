@@ -1,3 +1,8 @@
+/**
+ * Created by Aditya Kumar on 30/08/2025
+ * Documented clearly for understanding purposes
+ */
+
 import React from 'react';
 import {
   View,
