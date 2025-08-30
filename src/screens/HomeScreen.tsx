@@ -22,8 +22,7 @@
  */
 
 import React, { useState } from "react";
-import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
-import type { RootStackParamList } from "../../App";
+import { useNavigation } from "@react-navigation/native";
 import { 
   View, 
   Text, 
@@ -36,7 +35,7 @@ import {
   Alert
 } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
-import ObjectRecognition from '../components/ObjectRecognition';
+
 
 /**
  * HomeScreen - Main application entry point with clean design
@@ -50,17 +49,9 @@ import ObjectRecognition from '../components/ObjectRecognition';
 export default function HomeScreen() {
   // Navigation hook for programmatic navigation between screens
   const navigation = useNavigation<any>();
-  
-  // Route parameters to access photo URI passed from camera screen
-  const route = useRoute<RouteProp<RootStackParamList, "Home">>();
-  const photoUri = route.params?.photoUri;
 
   // State for action sheet modal
   const [isActionSheetVisible, setIsActionSheetVisible] = useState(false);
-  
-  // State for AI Analysis
-  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
 
   /**
    * Shows the action sheet with photo source options
@@ -116,8 +107,8 @@ export default function HomeScreen() {
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const selectedPhoto = result.assets[0];
         
-        // Navigate to home with the selected photo
-        navigation.navigate("Home", { photoUri: selectedPhoto.uri });
+        // Navigate to photo review screen with the selected photo
+        navigation.navigate("PhotoReview", { photoUri: selectedPhoto.uri });
       }
     } catch (error) {
       console.error("Error accessing photo gallery:", error);
@@ -136,34 +127,7 @@ export default function HomeScreen() {
     hideActionSheet();
   };
 
-  /**
-   * Initiates the AI analysis process for the captured photo
-   * 
-   * This function converts the photo to Base64 format and prepares
-   * it for AI analysis. The conversion process ensures compatibility
-   * with the vision service API while maintaining image quality.
-   */
-  const handleAIAnalysis = async () => {
-    if (!photoUri) return;
 
-    try {
-      // Convert photo to Base64 for AI processing
-      const response = await fetch(photoUri);
-      const blob = await response.blob();
-      
-      // Create a FileReader to convert blob to Base64
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result as string;
-        setImageBase64(base64);
-        setShowAIAnalysis(true);
-      };
-      reader.readAsDataURL(blob);
-    } catch (error) {
-      console.error('Error converting image to Base64:', error);
-      Alert.alert('Error', 'Failed to prepare image for analysis');
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -189,55 +153,22 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* Camera action section */}
-        <View style={styles.cameraSection}>
-          <View style={styles.cameraPreview}>
-            <View style={styles.cameraPlaceholder}>
-              <Text style={styles.cameraIcon}>📱</Text>
-              <Text style={styles.cameraText}>Camera Ready</Text>
-            </View>
-            <TouchableOpacity 
-              style={styles.cameraButton}
-              onPress={showActionSheet}
-              accessibilityLabel="Choose photo source"
-            >
-              <Text style={styles.cameraButtonIcon}>🔍</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.sectionTitle}>Identify Your Issue</Text>
-          <Text style={styles.sectionDescription}>
-            Snap a photo or record video of your repair issue and Finderly will spot the problem.
-          </Text>
+        {/* Identify Your Issue section */}
+        <View style={styles.identifySection}>
+          <TouchableOpacity 
+            style={styles.identifyImageButton}
+            onPress={showActionSheet}
+            accessibilityLabel="Choose photo source"
+          >
+            <Image 
+              source={require('../../assets/identify-your-issue.jpeg')} 
+              style={styles.identifyImage}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
         </View>
 
-        {/* Photo preview section (when available) */}
-        {photoUri && (
-          <View style={styles.photoSection}>
-            <View style={styles.photoContainer}>
-              <Image 
-                source={{ uri: photoUri }} 
-                style={styles.photoPreview} 
-                resizeMode="cover"
-                accessibilityLabel="Preview of captured photo"
-              />
-              <View style={styles.photoOverlay}>
-                <Text style={styles.photoOverlayText}>Photo Selected</Text>
-              </View>
-            </View>
-            <Text style={styles.sectionTitle}>Issue Identified</Text>
-            <Text style={styles.sectionDescription}>
-              Your photo has been selected. Review and analyze the issue for solutions.
-            </Text>
-            
-            {/* AI Analysis Button */}
-            <TouchableOpacity
-              style={styles.aiAnalysisButton}
-              onPress={handleAIAnalysis}
-            >
-              <Text style={styles.aiAnalysisButtonText}>AI Analysis</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+
 
         {/* Bottom spacing to ensure photo preview is fully visible */}
         <View style={styles.bottomSpacing} />
@@ -280,41 +211,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </Modal>
 
-      {/* AI Analysis Modal */}
-      <Modal
-        visible={showAIAnalysis}
-        animationType="slide"
-        presentationStyle="fullScreen"
-      >
-        <View style={styles.aiModalOverlay}>
-          <View style={styles.aiModalContainer}>
-            
-            {/* Modal Header */}
-            <View style={styles.aiModalHeader}>
-              <View style={styles.aiModalTitleContainer}>
-                <Text style={styles.aiModalTitle}>AI Object Recognition</Text>
-              </View>
-              <TouchableOpacity 
-                onPress={() => setShowAIAnalysis(false)}
-                style={styles.aiModalCloseButton}
-              >
-                <Text style={styles.aiModalCloseButtonText}>✕</Text>
-              </TouchableOpacity>
-            </View>
 
-            {/* AI Analysis Content */}
-            {imageBase64 && (
-              <ObjectRecognition 
-                imageBase64={imageBase64}
-                photoUri={photoUri || undefined}
-                onAnalysisComplete={(results) => {
-                  console.log('Analysis complete:', results);
-                }}
-              />
-            )}
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 }
@@ -375,125 +272,29 @@ const styles = StyleSheet.create({
     maxWidth: 300,
   },
   
-  // Camera section styling
-  cameraSection: {
+  // Identify Your Issue section styling
+  identifySection: {
     alignItems: "center",
     marginBottom: 40,
   },
   
-  // Camera preview container
-  cameraPreview: {
-    position: "relative",
-    alignItems: "center",
+  // Clickable image button container
+  identifyImageButton: {
     marginBottom: 24,
-  },
-  
-  // Camera placeholder styling
-  cameraPlaceholder: {
-    width: 280,
-    height: 160,
-    backgroundColor: "#f8f9fa",
     borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#dee2e6",
-    borderStyle: "dashed",
+    overflow: "hidden",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   
-  // Camera icon in placeholder
-  cameraIcon: {
-    fontSize: 48,
-    color: "#6c757d",
-    marginBottom: 8,
-  },
-  
-  // Camera text in placeholder
-  cameraText: {
-    fontSize: 14,
-    color: "#6c757d",
-    fontWeight: "500",
-  },
-  
-  // Camera action button
-  cameraButton: {
-    position: "absolute",
-    bottom: -30,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#6f42c1",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#6f42c1",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  
-  // Camera button icon
-  cameraButtonIcon: {
-    fontSize: 24,
-    color: "#ffffff",
-  },
-  
-  // Section title styling
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#495057",
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  
-  // Section description styling
-  sectionDescription: {
-    fontSize: 16,
-    color: "#6c757d",
-    textAlign: "center",
-    lineHeight: 24,
-    maxWidth: 300,
-  },
-  
-  // Photo section styling
-  photoSection: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  
-  // Photo container
-  photoContainer: {
-    position: "relative",
-    marginBottom: 24,
-  },
-  
-  // Photo preview styling
-  photoPreview: {
-    width: 280,
-    height: 200,
+  // Identify issue image
+  identifyImage: {
+    width: 350,
+    height: 420,
     borderRadius: 16,
-  },
-  
-  // Photo overlay styling
-  photoOverlay: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "rgba(111, 66, 193, 0.9)",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
-  },
-  
-  // Photo overlay text
-  photoOverlayText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "600",
-    textAlign: "center",
   },
   
   // Bottom spacing to ensure content is fully scrollable
@@ -543,87 +344,7 @@ const styles = StyleSheet.create({
   // Cancel button text styling
   cancelButtonText: {
     fontSize: 18,
-    color: "#FF3B30", // iOS red color
+    color: "#FF3B30", // iOS blue color
     fontWeight: "500",
-  },
-
-  // AI Analysis button styling
-  aiAnalysisButton: {
-    backgroundColor: "#8B5CF6", // Purple theme consistent with app design
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 16,
-    borderRadius: 12,
-    marginHorizontal: 24,
-    marginBottom: 20,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-  },
-  
-  // AI Analysis button text styling
-  aiAnalysisButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  
-  // AI Modal overlay styling for full-screen modal
-  aiModalOverlay: {
-    flex: 1,
-    backgroundColor: "#000000",
-  },
-  
-  // AI Modal container styling
-  aiModalContainer: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
-  
-  // AI Modal header styling with proper spacing and layout
-  aiModalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-    paddingTop: 80, // Generous top padding to center the header
-    paddingBottom: 24, // Bottom padding for better separation
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-    backgroundColor: "#f8f9fa",
-    minHeight: 120, // Ensure consistent header height
-  },
-  
-  // AI Modal title container for proper centering
-  aiModalTitleContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  // AI Modal title styling with prominent appearance
-  aiModalTitle: {
-    fontSize: 20, // Slightly larger for better visibility
-    fontWeight: "700", // Bolder for better prominence
-    color: "#333333",
-    textAlign: "center", // Ensure center alignment
-  },
-
-  // AI Modal close button styling
-  aiModalCloseButton: {
-    padding: 12,
-    borderRadius: 20,
-    backgroundColor: "#f0f0f0",
-    alignSelf: "flex-start", // Align to top of header
-    marginLeft: 8, // Add left margin for spacing
-  },
-  
-  // AI Modal close button text styling
-  aiModalCloseButtonText: {
-    fontSize: 18,
-    color: "#333333",
-    fontWeight: "600",
   },
 });

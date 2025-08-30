@@ -3,15 +3,13 @@
  * Documented clearly for understanding purposes
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  ActivityIndicator,
   ScrollView,
-  TouchableOpacity,
-  Image,
+  Animated,
 } from 'react-native';
 import visionService from '../services/visionService';
 
@@ -50,6 +48,39 @@ const ObjectRecognition: React.FC<ObjectRecognitionProps> = ({
   const [results, setResults] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Animation for loading spinner
+  const spinValue = useRef(new Animated.Value(0)).current;
+
+  // Start pulsing animation when analyzing begins
+  useEffect(() => {
+    if (isAnalyzing) {
+      const pulseAnimation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(spinValue, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(spinValue, {
+            toValue: 0,
+            duration: 800,
+            useNativeDriver: true,
+          })
+        ])
+      );
+      pulseAnimation.start();
+      
+      return () => pulseAnimation.stop();
+    }
+  }, [isAnalyzing, spinValue]);
+
+  // Auto-analyze when imageBase64 is provided
+  React.useEffect(() => {
+    if (imageBase64 && !results && !isAnalyzing) {
+      analyzeImage();
+    }
+  }, [imageBase64]);
+
   /**
    * Initiates the image analysis process
    * 
@@ -82,54 +113,22 @@ const ObjectRecognition: React.FC<ObjectRecognitionProps> = ({
     }
   };
 
-  // Early return for cases where no image data is available
-  // This prevents unnecessary rendering and provides clear user guidance
-  if (!imageBase64) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.placeholder}>Take a photo to analyze</Text>
-      </View>
-    );
-  }
+
 
   return (
     <View style={styles.container}>
-      {/* Photo Display Section */}
-      {/* 
-        Show the captured photo above the analyze button to provide
-        visual context for what the user is about to analyze
-      */}
-      {photoUri && (
-        <View style={styles.photoContainer}>
-          <Image 
-            source={{ uri: photoUri }} 
-            style={styles.photo} 
-            resizeMode="contain" 
-          />
+      
+      {/* Loading State */}
+      {isAnalyzing && (
+        <View style={styles.analyzingContainer}>
+          <View style={styles.analyzingDots}>
+            <Animated.View style={[styles.dot, { opacity: spinValue }]} />
+            <Animated.View style={[styles.dot, { opacity: spinValue.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1] }) }]} />
+            <Animated.View style={[styles.dot, { opacity: spinValue.interpolate({ inputRange: [0, 1], outputRange: [0.1, 1] }) }]} />
+          </View>
+          <Text style={styles.analyzingText}>Analyzing image with AI...</Text>
         </View>
       )}
-
-      {/* Analysis Trigger Button */}
-      {/* 
-        The primary action button that initiates the AI analysis.
-        Disabled state prevents multiple simultaneous requests and
-        provides visual feedback during processing.
-      */}
-      <TouchableOpacity
-        style={[styles.analyzeButton, isAnalyzing && styles.analyzingButton]}
-        onPress={analyzeImage}
-        disabled={isAnalyzing}
-      >
-        {isAnalyzing ? (
-          // Show loading indicator during analysis
-          <ActivityIndicator color="#fff" />
-        ) : (
-          // Show action text when ready for user interaction
-          <Text style={styles.analyzeButtonText}>
-            Analyze Image
-          </Text>
-        )}
-      </TouchableOpacity>
 
       {/* Error Display */}
       {/* 
@@ -148,7 +147,7 @@ const ObjectRecognition: React.FC<ObjectRecognitionProps> = ({
         intelligently handles different result scenarios to provide
         the most useful information to the user.
       */}
-      {results && (
+      {results && !isAnalyzing && (
         <ScrollView style={styles.resultsContainer}>
           <Text style={styles.sectionTitle}>Detected Objects</Text>
           
@@ -212,51 +211,7 @@ const styles = StyleSheet.create({
     paddingTop: 32, // Generous top spacing for header breathing room
   },
   
-  // Placeholder text styling for empty states
-  placeholder: {
-    textAlign: 'center',
-    fontSize: 16,
-    color: '#666',
-    marginTop: 20,
-  },
-  
-  // Photo display container for visual context
-  photoContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  
-  // Photo styling with professional appearance
-  photo: {
-    width: 200,
-    height: 200,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#e0e0e0',
-  },
-  
-  // Primary action button with brand-consistent purple theme
-  analyzeButton: {
-    backgroundColor: '#8B5CF6', // Purple that matches app design system
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 16,
-    marginTop: 16, // Consistent spacing above button
-  },
-  
-  // Disabled state styling for button during processing
-  analyzingButton: {
-    backgroundColor: '#999',
-  },
-  
-  // Button text styling for clear readability
-  analyzeButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  
+
   // Error state container with appropriate visual treatment
   errorContainer: {
     backgroundColor: '#FFEBEE',
@@ -281,7 +236,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    marginTop: 24, // Consistent spacing from button
+    marginTop: 0, // No button above anymore
     textAlign: 'center',
     color: '#333',
   },
@@ -336,6 +291,47 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 8,
     fontWeight: '500',
+  },
+  
+  // Analyzing container styling
+  analyzingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 20,
+    minHeight: 200,
+  },
+  
+  // Analyzing dots container styling
+  analyzingDots: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+    gap: 12,
+  },
+  
+  // Individual dot styling
+  dot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#8B5CF6',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  
+  // Analyzing text styling
+  analyzingText: {
+    fontSize: 18,
+    color: '#6c757d',
+    textAlign: 'center',
+    lineHeight: 26,
+    fontWeight: '500',
+    maxWidth: 250,
   },
 });
 

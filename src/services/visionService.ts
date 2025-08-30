@@ -133,49 +133,6 @@ class VisionService {
     }
   }
 
-  /**
-   * Generates a human-readable description of image content
-   * 
-   * This method provides a simplified, user-friendly summary
-   * of what the AI detected in the image. It focuses on the
-   * most confident detections and presents them in natural language.
-   * 
-   * @param imageBase64 - Base64 encoded image data for analysis
-   * @returns Promise<string> - Human-readable description of image content
-   */
-  async getImageDescription(imageBase64: string): Promise<string> {
-    try {
-      // Perform full image analysis to get comprehensive results
-      const analysis = await this.analyzeImage(imageBase64);
-      
-      // Handle case where no labels were detected
-      if (analysis.labels.length === 0) {
-        return 'No objects detected in the image.';
-      }
-
-      // Extract top 3 most confident labels for description
-      const topLabels = analysis.labels.slice(0, 3);
-      const confidence = analysis.confidence.slice(0, 3);
-      
-      // Build natural language description with confidence scores
-      let description = 'I can see: ';
-      topLabels.forEach((label, index) => {
-        const conf = Math.round(confidence[index] * 100);
-        description += `${label} (${conf}% confidence)`;
-        if (index < topLabels.length - 1) description += ', ';
-      });
-
-      // Add text content if detected
-      if (analysis.text) {
-        description += `\n\nText detected: ${analysis.text}`;
-      }
-
-      return description;
-    } catch (error) {
-      // Return user-friendly message when analysis fails
-      return 'Unable to analyze image at this time.';
-    }
-  }
 }
 
 // Export a singleton instance of the service

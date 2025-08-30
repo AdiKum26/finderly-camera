@@ -61,9 +61,9 @@ A React Native mobile application that combines camera functionality with **AI-p
    npm install
    ```
 
-3. **Install additional dependencies for AI functionality**
+3. **Install dependencies**
    ```bash
-   npm install @google-cloud/vision axios
+   npm install
    ```
 
 4. **🔑 CRITICAL: Configure Google Cloud Vision API**
@@ -87,9 +87,8 @@ A React Native mobile application that combines camera functionality with **AI-p
    ```typescript
    // src/config/vision.ts
    export const GOOGLE_CLOUD = {
-     API_KEY: 'YOUR_API_KEY_HERE', // Replace with your actual API key
+     API_KEY: 'YOUR_GOOGLE_CLOUD_VISION_API_KEY_HERE', // ⚠️ REPLACE WITH YOUR ACTUAL API KEY
      BASE_URL: 'https://vision.googleapis.com/v1/images:annotate',
-     // ... other settings
    };
    ```
 
@@ -132,9 +131,8 @@ A React Native mobile application that combines camera functionality with **AI-p
    ```typescript
    // src/config/vision.ts
    export const GOOGLE_CLOUD = {
-     API_KEY: 'YOUR_API_KEY_HERE', // ⚠️ REPLACE THIS WITH YOUR KEY
+     API_KEY: 'YOUR_GOOGLE_CLOUD_VISION_API_KEY_HERE', // ⚠️ REPLACE WITH YOUR ACTUAL API KEY
      BASE_URL: 'https://vision.googleapis.com/v1/images:annotate',
-     // ... other settings
    };
    ```
 
@@ -165,30 +163,36 @@ finderly-camera/
 │   │   └── usePermissions.ts        # Camera permissions hook
 │   ├── screens/
 │   │   ├── CameraScreen.tsx         # Camera capture screen
-│   │   └── HomeScreen.tsx           # Main home screen with AI analysis
-│   ├── services/
-│   │   └── visionService.ts         # Google Cloud Vision service integration
-│   └── types/
-│       └── media.ts                 # TypeScript type definitions
+│   │   ├── HomeScreen.tsx           # Main home screen with photo selection
+│   │   └── PhotoReviewScreen.tsx    # Photo review and AI analysis screen
+│   └── services/
+│       └── visionService.ts         # Google Cloud Vision service integration
 ├── android/                          # Android native code
 ├── ios/                             # iOS native code
 ├── assets/                          # App icons and images
 ├── App.tsx                          # Main app component
-└── package.json                     # Dependencies and scripts
+├── index.ts                         # Application entry point
+├── package.json                     # Dependencies and scripts
+├── tsconfig.json                    # TypeScript configuration
+├── babel.config.js                  # Babel transpiler configuration
+├── app.json                         # Expo configuration
+├── .gitignore                       # Git ignore patterns
+├── README.md                        # This file
+└── API_CONFIG_TEMPLATE.md           # API setup instructions
 ```
 
 ## 🔍 How It Works
 
-### 1. Photo Capture
-- User takes photo using camera or selects from library
-- Photo is displayed in home screen with preview
-- AI Analysis button appears below the photo
+### 1. Photo Selection
+- User selects photo from camera or photo library
+- App navigates to dedicated Photo Review screen
+- Photo is displayed with purple border and "AI Insights" button
 
 ### 2. AI Analysis (Google Cloud Vision API)
-- User taps "AI Analysis" button
+- User taps "AI Insights" button
 - Photo is converted to Base64 format
-- Full-screen modal opens with photo display
-- User taps "Analyze Image" button
+- Loading animation shows "Preparing image for analysis..."
+- Analysis begins automatically
 
 ### 3. Object Recognition (Cloud AI)
 - Image is sent to **Google Cloud Vision API**
@@ -196,12 +200,13 @@ finderly-camera/
   - **Object Localization** (primary) - Identifies and locates objects
   - **Label Detection** (fallback) - Categorizes image content
   - **Text Detection** (additional) - Extracts readable text
-- Results are processed and displayed
+- Results are processed and displayed inline
 
 ### 4. Results Display
 - **Primary**: Shows detected objects if available
 - **Fallback**: Shows "Could not recognize object" + object labels
 - **Smart Logic**: Automatically chooses best available information
+- **Loading States**: Elegant animated loading indicators throughout the process
 
 ## 🎨 UI/UX Features
 
@@ -375,5 +380,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ using React Native and Google Cloud Vision API**
 
-*Last updated: August 2025*
+*Last updated: December 2024*
 *Created by Aditya Kumar*

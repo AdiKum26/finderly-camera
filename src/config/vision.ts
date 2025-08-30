@@ -34,28 +34,6 @@ export const GOOGLE_CLOUD = {
   
   /** Base URL for the Google Cloud Vision API endpoint */
   BASE_URL: 'https://vision.googleapis.com/v1/images:annotate',
-  
-  /** Maximum number of results to return for each feature type */
-  MAX_RESULTS: {
-    LABELS: 10,      // Maximum label detection results
-    OBJECTS: 10,     // Maximum object localization results
-    TEXT: 5,         // Maximum text detection results
-    FACES: 5,        // Maximum face detection results
-    LANDMARKS: 5,    // Maximum landmark detection results
-    LOGOS: 5,        // Maximum logo detection results
-  },
-  
-  /** Supported image formats for analysis */
-  SUPPORTED_FORMATS: [
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-    'image/bmp',
-    'image/webp',
-  ],
-  
-  /** Maximum image size in bytes (10MB) */
-  MAX_IMAGE_SIZE: 10 * 1024 * 1024,
 };
 
 /**
@@ -68,21 +46,6 @@ export const GOOGLE_CLOUD = {
 export const VISION_CONFIG = {
   /** Google Cloud Vision API settings */
   GOOGLE_CLOUD,
-  
-  /** Global vision service settings */
-  GLOBAL: {
-    /** Default timeout for API requests in milliseconds */
-    REQUEST_TIMEOUT: 30000,
-    
-    /** Maximum retry attempts for failed requests */
-    MAX_RETRIES: 3,
-    
-    /** Whether to enable request caching */
-    ENABLE_CACHING: true,
-    
-    /** Cache expiration time in milliseconds */
-    CACHE_EXPIRY: 5 * 60 * 1000, // 5 minutes
-  },
 };
 
 export default VISION_CONFIG;

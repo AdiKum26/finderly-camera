@@ -117,12 +117,12 @@ export default function CameraScreen() {
   };
 
   /**
-   * Handles photo confirmation and navigation back to home screen
+   * Handles photo confirmation and navigation to photo review screen
    * Passes the captured photo URI as navigation parameter
    */
   const handleUsePhoto = () => {
     if (photoUri) {
-      navigation.navigate("Home", { photoUri });
+      navigation.navigate("PhotoReview", { photoUri });
     }
   };
 

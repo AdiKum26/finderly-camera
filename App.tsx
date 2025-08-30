@@ -27,6 +27,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // Screen component imports
 import HomeScreen from "./src/screens/HomeScreen";
 import CameraScreen from "./src/screens/CameraScreen";
+import { PhotoReviewScreen } from "./src/screens/PhotoReviewScreen";
 
 // Expo utilities
 import { StatusBar } from "expo-status-bar";
@@ -46,6 +47,7 @@ import { StatusBar } from "expo-status-bar";
 export type RootStackParamList = {
   Home: { photoUri?: string } | undefined;
   Camera: undefined;
+  PhotoReview: { photoUri: string };
 };
 
 /**
@@ -103,6 +105,17 @@ export default function App() {
             headerShown: false, // Hide header for immersive camera experience
             // Prevent back gesture on iOS for better UX
             gestureEnabled: false,
+          }} 
+        />
+        
+        {/* Photo Review screen - displays captured photo with AI analysis options */}
+        <Stack.Screen 
+          name="PhotoReview" 
+          component={PhotoReviewScreen} 
+          options={{ 
+            headerShown: false, // Custom header implemented in component
+            // Allow back gesture for natural navigation
+            gestureEnabled: true,
           }} 
         />
       </Stack.Navigator>
