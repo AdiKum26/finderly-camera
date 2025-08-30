@@ -37,6 +37,7 @@ import {
 } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import ObjectRecognition from '../components/ObjectRecognition';
+import HomeSearchIcon from '../components/HomeSearchIcon';
 
 /**
  * HomeScreen - Main application entry point with clean design
@@ -176,7 +177,7 @@ export default function HomeScreen() {
         {/* Welcome section */}
         <View style={styles.welcomeSection}>
           <View style={styles.iconContainer}>
-            <Text style={styles.icon}>🏠</Text>
+            <HomeSearchIcon />
           </View>
           <Text style={styles.title}>Find it, snap it, fix it</Text>
           <Text style={styles.subtitle}>
@@ -344,11 +345,6 @@ const styles = StyleSheet.create({
   // Icon container
   iconContainer: {
     marginBottom: 16,
-  },
-  
-  // Large icon styling
-  icon: {
-    fontSize: 64,
   },
   
   // Main title styling
