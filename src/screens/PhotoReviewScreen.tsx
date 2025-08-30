@@ -115,7 +115,10 @@ export const PhotoReviewScreen: React.FC<PhotoReviewScreenProps> = ({ route }) =
         <View style={styles.startOverContainer}>
           <TouchableOpacity 
             style={styles.startOverButton}
-            onPress={() => navigation.navigate('Home')}
+            onPress={() => navigation.reset({
+              index: 0,
+              routes: [{ name: 'Home' }],
+            })}
             accessibilityLabel="Start over and return to home"
           >
             <Text style={styles.startOverButtonText}>Start over</Text>
