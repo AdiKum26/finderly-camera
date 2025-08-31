@@ -2,6 +2,12 @@
 
 A React Native mobile application that combines camera functionality with **AI-powered object recognition using Google Cloud Vision API**. This app demonstrates advanced mobile development with cloud AI integration, Expo ejection, and the use of **react-native-vision-camera** for native-level performance.
 
+## 🎥 Demo Video
+
+📱 **[Watch the app in action on YouTube](https://youtube.com/shorts/Y7Aq7SjXw9o?si=ovc5nEkVMpJ315M4)**
+
+See how Finderly Camera captures photos and uses AI to identify objects and devices in real-time!
+
 ## 🚀 Features
 
 ### Core Functionality
