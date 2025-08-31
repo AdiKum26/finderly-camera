@@ -1,129 +1,74 @@
 /**
- * Created by Aditya Kumar on 30/08/2025
- * Documented clearly for understanding purposes
+ * Created by Aditya Kumar on 08/30/2025
+ * Finderly Camera - Main App Navigation Setup
  */
 
-/**
- * Finderly Camera - Main Application Component
- * 
- * Root component that sets up navigation, routing, and global app configuration.
- * Implements React Navigation with TypeScript for type-safe navigation between
- * camera and home screens.
- * 
- * Features:
- * - React Navigation setup with native stack navigator
- * - Type-safe navigation parameters
- * - Global status bar configuration
- * - Screen routing and navigation options
- */
-
-// Import gesture handler at the top level for proper touch handling
 import "react-native-gesture-handler";
-
-// Navigation and routing imports
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-// Screen component imports
 import HomeScreen from "./src/screens/HomeScreen";
 import CameraScreen from "./src/screens/CameraScreen";
 import { PhotoReviewScreen } from "./src/screens/PhotoReviewScreen";
 import HowItWorksScreen from "./src/screens/HowItWorksScreen";
 import ContactScreen from "./src/screens/ContactScreen";
-
-// Expo utilities
 import { StatusBar } from "expo-status-bar";
 
-/**
- * Root navigation parameter list type definition
- * 
- * Defines the structure of navigation parameters for each screen
- * in the application. This ensures type safety when passing data
- * between screens during navigation.
- * 
- * @interface RootStackParamList
- * @property {Object} Home - Home screen parameters
- * @property {string} [Home.photoUri] - Optional URI of captured photo to display
- * @property {undefined} Camera - Camera screen (no parameters needed)
- */
+// Define navigation parameter types for each route in the app
 export type RootStackParamList = {
-  Home: { photoUri?: string } | undefined;
+  Home: { photoUri?: string } | undefined; // Optional photoUri passed when returning from photo review
   Camera: undefined;
-  PhotoReview: { photoUri: string };
+  PhotoReview: { photoUri: string }; // Requires a photoUri to review
   HowItWorks: undefined;
   Contact: undefined;
 };
 
-/**
- * Native stack navigator instance for screen routing
- * 
- * Creates a stack-based navigation system that allows users to
- * navigate between screens with proper back button handling
- * and transition animations.
- */
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 /**
- * App - Main application component
- * 
- * This component serves as the entry point for the Finderly Camera
- * application. It sets up the navigation structure, configures
- * global app settings, and renders the appropriate screen based
- * on the current navigation state.
- * 
- * The component demonstrates proper TypeScript usage with React Navigation,
- * clean component organization, and follows React Native best practices
- * for app structure and navigation setup.
- * 
- * @returns JSX.Element - Rendered application with navigation setup
+ * Main App Component
+ * - Sets up navigation using React Navigation
+ * - Applies consistent theming and screen transitions
  */
 export default function App() {
   return (
     <NavigationContainer theme={DefaultTheme}>
-      {/* Global status bar configuration */}
+      {/* Applies the system status bar styling */}
       <StatusBar style="auto" />
-      
-      {/* Stack navigator for screen management */}
+
+      {/* Navigation stack setup */}
       <Stack.Navigator>
-        {/* Home screen - main landing page */}
+        {/* Home screen with title and styled header */}
         <Stack.Screen 
           name="Home" 
           component={HomeScreen} 
           options={{ 
             title: "Finderly Camera",
-            // Additional navigation options can be added here
-            headerStyle: {
-              backgroundColor: '#f8f9fa',
-            },
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
+            headerStyle: { backgroundColor: '#f8f9fa' },
+            headerTitleStyle: { fontWeight: '600' },
           }} 
         />
-        
-        {/* Camera screen - full-screen camera interface */}
+
+        {/* Camera screen - no header, immersive full-screen experience */}
         <Stack.Screen 
           name="Camera" 
           component={CameraScreen} 
           options={{ 
-            headerShown: false, // Hide header for immersive camera experience
-            // Prevent back gesture on iOS for better UX
+            headerShown: false,
             gestureEnabled: false,
           }} 
         />
-        
-        {/* Photo Review screen - displays captured photo with AI analysis options */}
+
+        {/* Photo review screen - user confirms or analyzes captured image */}
         <Stack.Screen 
           name="PhotoReview" 
           component={PhotoReviewScreen} 
           options={{ 
-            headerShown: false, // Custom header implemented in component
-            // Allow back gesture for natural navigation
+            headerShown: false,
             gestureEnabled: true,
           }} 
         />
-        
-        {/* How It Works screen - app explanation */}
+
+        {/* How It Works - info screen explaining app functionality */}
         <Stack.Screen 
           name="HowItWorks" 
           component={HowItWorksScreen} 
@@ -132,8 +77,8 @@ export default function App() {
             gestureEnabled: true,
           }} 
         />
-        
-        {/* Contact screen - support and contact information */}
+
+        {/* Contact screen - user support and contact info */}
         <Stack.Screen 
           name="Contact" 
           component={ContactScreen} 

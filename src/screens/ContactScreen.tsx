@@ -1,6 +1,6 @@
 /**
- * Created by Aditya Kumar on 30/08/2025
- * Documented clearly for understanding purposes
+ * Created by Aditya Kumar on 08/30/2025
+ * ContactScreen - App support and contact details
  */
 
 import React from 'react';
@@ -15,86 +15,61 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-/**
- * ContactScreen - Contact and support information
- * 
- * This screen provides users with contact information and support details
- * for reaching out to the Finderly team.
- */
-export const ContactScreen: React.FC = () => {
+const ContactScreen: React.FC = () => {
   const navigation = useNavigation<any>();
 
-  /**
-   * Handles navigation back to the home screen
-   */
   const handleBack = () => {
     navigation.goBack();
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header with back button */}
+      {/* Header with back navigation */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={handleBack}
-          accessibilityLabel="Go back"
-        >
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <Text style={styles.backButtonText}>‹</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Main content */}
-      <ScrollView 
+      {/* Scrollable contact content */}
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* House icon */}
+        {/* App Icon */}
         <View style={styles.iconContainer}>
-          <Image 
-            source={require('../../assets/finderly-icon.jpg')} 
+          <Image
+            source={require('../../assets/finderly-icon.jpg')}
             style={styles.houseIcon}
             resizeMode="contain"
           />
         </View>
 
-        {/* Title */}
         <Text style={styles.title}>Contact Us</Text>
 
-        {/* Description */}
         <Text style={styles.description}>
-          If you are encountering issues and want to reach out to us, our email is:
+          Need help? Reach out via email:
         </Text>
 
-        {/* Email */}
         <View style={styles.emailContainer}>
           <Text style={styles.email}>support@finderly.us</Text>
         </View>
 
-        {/* Additional info */}
         <Text style={styles.additionalInfo}>
-          We're here to help! Feel free to reach out with any questions, feedback, or technical issues you may have.
+          We're happy to assist with any questions, feedback, or issues.
         </Text>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-/**
- * Component Styles
- * 
- * Clean, modern styling that matches the app's design system
- * with proper spacing, typography, and color scheme.
- */
+// Styling for layout and typography
 const styles = StyleSheet.create({
-  // Main container
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
   },
-
-  // Header with back button
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -102,44 +77,30 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingHorizontal: 24,
   },
-
-  // Back button
   backButton: {
     padding: 8,
   },
-
-  // Back button text (chevron)
   backButtonText: {
     fontSize: 32,
     color: '#8B5CF6',
     fontWeight: '600',
   },
-
-  // Scroll view
   scrollView: {
     flex: 1,
   },
-
-  // Scroll content
   scrollContent: {
     padding: 24,
     paddingBottom: 40,
     alignItems: 'center',
   },
-
-  // Icon container
   iconContainer: {
     alignItems: 'center',
     marginBottom: 32,
   },
-
-  // House icon
   houseIcon: {
     width: 80,
     height: 80,
   },
-
-  // Main title
   title: {
     fontSize: 32,
     fontWeight: '700',
@@ -148,8 +109,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     lineHeight: 40,
   },
-
-  // Description text
   description: {
     fontSize: 18,
     color: '#374151',
@@ -158,8 +117,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     maxWidth: 320,
   },
-
-  // Email container
   emailContainer: {
     backgroundColor: '#F3E8FF',
     paddingHorizontal: 24,
@@ -169,16 +126,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#8B5CF6',
   },
-
-  // Email text
   email: {
     fontSize: 20,
     fontWeight: '600',
     color: '#8B5CF6',
     textAlign: 'center',
   },
-
-  // Additional info
   additionalInfo: {
     fontSize: 16,
     color: '#6B7280',

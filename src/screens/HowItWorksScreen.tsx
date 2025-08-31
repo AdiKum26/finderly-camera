@@ -1,6 +1,6 @@
 /**
- * Created by Aditya Kumar on 30/08/2025
- * Documented clearly for understanding purposes
+ * Created by Aditya Kumar on 08/30/2025
+ * HowItWorksScreen - Explains Finderly functionality
  */
 
 import React from 'react';
@@ -14,109 +14,68 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-/**
- * HowItWorksScreen - Explains how the Finderly app works
- * 
- * This screen provides users with a clear understanding of the app's
- * functionality, from photo capture to AI analysis and professional connections.
- */
-export const HowItWorksScreen: React.FC = () => {
+const HowItWorksScreen: React.FC = () => {
   const navigation = useNavigation<any>();
 
-  /**
-   * Handles navigation back to the home screen
-   */
   const handleBack = () => {
     navigation.goBack();
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header with back button */}
+      {/* Top nav header */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={handleBack}
-          accessibilityLabel="Go back"
-        >
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>‹</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Main content */}
-      <ScrollView 
+      {/* Instructions content */}
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Information icon */}
         <View style={styles.infoIconContainer}>
           <View style={styles.infoIcon}>
             <Text style={styles.infoIconText}>i</Text>
           </View>
         </View>
 
-        {/* Title */}
         <Text style={styles.title}>How Finderly works</Text>
 
-        {/* Introduction */}
         <Text style={styles.introText}>
-          Take a photo or select from your gallery! Finderly uses can help you to analyze your image and identify objects and issues.
+          Use Finderly to analyze photos using AI. Whether it's an object, issue, or item — get useful insights in seconds.
         </Text>
 
-        {/* Steps */}
         <View style={styles.stepsContainer}>
           <View style={styles.step}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>1</Text>
-            </View>
-            <Text style={styles.stepText}>
-              Take a clear photo or select an image from your gallery
-            </Text>
+            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>1</Text></View>
+            <Text style={styles.stepText}>Take a photo or choose one from your gallery.</Text>
           </View>
 
           <View style={styles.step}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>2</Text>
-            </View>
-            <Text style={styles.stepText}>
-              Our AI analyzes the image to detect objects, text, and identify what's in the photo
-            </Text>
+            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>2</Text></View>
+            <Text style={styles.stepText}>AI scans the image to detect objects and text.</Text>
           </View>
 
           <View style={styles.step}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>3</Text>
-            </View>
-            <Text style={styles.stepText}>
-              Get detailed results showing detected objects and their classifications with confidence scores
-            </Text>
+            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>3</Text></View>
+            <Text style={styles.stepText}>Get instant results with labels, suggestions, or matches.</Text>
           </View>
         </View>
 
-        {/* Problem scope */}
         <Text style={styles.scopeText}>
-          Finderly can identify objects, read text, and analyze any type of image. Perfect for identifying household items, appliances, tools, electronics, and more.
+          Finderly is ideal for identifying everyday objects, appliances, tools, and more.
         </Text>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-/**
- * Component Styles
- * 
- * Clean, modern styling that matches the app's design system
- * with proper spacing, typography, and color scheme.
- */
+// Basic UI styles
 const styles = StyleSheet.create({
-  // Main container
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-
-  // Header with back button
+  container: { flex: 1, backgroundColor: '#ffffff' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -124,37 +83,15 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingHorizontal: 24,
   },
-
-  // Back button
-  backButton: {
-    padding: 8,
-  },
-
-  // Back button text (chevron)
+  backButton: { padding: 8 },
   backButtonText: {
     fontSize: 32,
     color: '#8B5CF6',
     fontWeight: '600',
   },
-
-  // Scroll view
-  scrollView: {
-    flex: 1,
-  },
-
-  // Scroll content
-  scrollContent: {
-    padding: 24,
-    paddingBottom: 40,
-  },
-
-  // Information icon container
-  infoIconContainer: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-
-  // Information icon
+  scrollView: { flex: 1 },
+  scrollContent: { padding: 24, paddingBottom: 40 },
+  infoIconContainer: { alignItems: 'center', marginBottom: 24 },
   infoIcon: {
     width: 60,
     height: 60,
@@ -165,15 +102,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#8B5CF6',
   },
-
-  // Information icon text
   infoIconText: {
     fontSize: 28,
     color: '#8B5CF6',
     fontWeight: 'bold',
   },
-
-  // Main title
   title: {
     fontSize: 32,
     fontWeight: '700',
@@ -182,8 +115,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     lineHeight: 40,
   },
-
-  // Introduction text
   introText: {
     fontSize: 18,
     color: '#374151',
@@ -193,20 +124,12 @@ const styles = StyleSheet.create({
     maxWidth: 320,
     alignSelf: 'center',
   },
-
-  // Steps container
-  stepsContainer: {
-    marginBottom: 32,
-  },
-
-  // Individual step
+  stepsContainer: { marginBottom: 32 },
   step: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: 24,
   },
-
-  // Step number circle
   stepNumber: {
     width: 32,
     height: 32,
@@ -217,15 +140,11 @@ const styles = StyleSheet.create({
     marginRight: 16,
     marginTop: 2,
   },
-
-  // Step number text
   stepNumberText: {
     fontSize: 18,
     color: '#ffffff',
     fontWeight: '600',
   },
-
-  // Step text
   stepText: {
     flex: 1,
     fontSize: 16,
@@ -233,8 +152,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontWeight: '500',
   },
-
-  // Problem scope text
   scopeText: {
     fontSize: 16,
     color: '#374151',

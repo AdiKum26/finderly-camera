@@ -1,22 +1,6 @@
 /**
- * Created by Aditya Kumar on 30/08/2025
- * Documented clearly for understanding purposes
- */
-
-/**
- * CameraScreen Component
- * 
- * Full-screen camera interface that provides photo capture functionality
- * with advanced controls including torch, camera flip, and photo preview.
- * 
- * Features:
- * - Live camera preview using react-native-vision-camera
- * - Photo capture with flash control
- * - Front/back camera switching
- * - Torch (flashlight) toggle
- * - Photo preview with confirmation
- * - Graceful permission handling
- * - Overlay UI with reticle guide
+ * Created by Aditya Kumar on 08/30/2025
+ * CameraScreen - Fullscreen photo capture interface
  */
 
 import { useRef, useState, useMemo } from "react";
@@ -26,68 +10,43 @@ import { Camera, useCameraDevice } from "react-native-vision-camera";
 import ShutterButton from "../components/ShutterButton";
 import { usePermissions } from "../hooks/usePermissions";
 
-/**
- * CameraScreen - Advanced camera interface with photo capture
- * 
- * This component demonstrates the integration of react-native-vision-camera
- * with proper permission handling, device management, and user interface
- * design. It showcases TypeScript best practices and React Native patterns.
- * 
- * @returns JSX.Element - Rendered camera screen component
- */
 export default function CameraScreen() {
-  // Navigation hook for returning to previous screen
   const navigation = useNavigation<any>();
-  
-  // Custom hook for managing camera permissions
+
+  // Get camera permissions
   const { granted, cameraStatus, request } = usePermissions();
-  
-  // Camera device state management
+
+  // Track which camera is active (front/back)
   const [facing, setFacing] = useState<"back" | "front">("back");
   const device = useCameraDevice(facing);
-  
-  // Camera reference for programmatic control
+
+  // Reference to Camera component
   const cameraRef = useRef<Camera>(null);
-  
-  // Local state for captured photo and torch control
+
+  // Captured photo and flashlight toggle
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [torch, setTorch] = useState<"on" | "off">("off");
 
-  // Computed value to determine if camera is ready for use
+  // Check if the camera is ready to use
   const isCameraReady = useMemo(() => granted && !!device, [granted, device]);
 
-  /**
-   * Permission request screen - shown when camera access is not granted
-   * Provides clear explanation and action buttons for user consent
-   */
+  // Show permission screen if not granted
   if (cameraStatus !== "granted") {
     return (
       <View style={styles.center}>
         <Text style={styles.title}>Camera Permission</Text>
-        <Text style={styles.msg}>
-          We need access to your camera to take photos.
-        </Text>
-        
-        {/* Primary action to request camera permissions */}
+        <Text style={styles.msg}>We need access to your camera to take photos.</Text>
         <TouchableOpacity onPress={request} style={styles.btn}>
           <Text style={styles.btnText}>Grant Permission</Text>
         </TouchableOpacity>
-        
-        {/* Secondary action to return to previous screen */}
-        <TouchableOpacity 
-          onPress={() => navigation.goBack()} 
-          style={[styles.btn, { backgroundColor: "#eee" }]}
-        >
+        <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.btn, { backgroundColor: "#eee" }]}>
           <Text style={[styles.btnText, { color: "#333" }]}>Back</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  /**
-   * Device unavailable screen - shown when no camera device is detected
-   * This typically occurs on simulators or devices without camera hardware
-   */
+  // Handle device not available (e.g. on simulators)
   if (!device) {
     return (
       <View style={styles.center}>
@@ -96,19 +55,11 @@ export default function CameraScreen() {
     );
   }
 
-  /**
-   * Handles photo capture using the active camera device
-   * Configures flash based on torch state and handles platform-specific URI formatting
-   */
+  // Capture a photo using the current camera
   const handleTakePhoto = async () => {
     try {
-      const photo = await cameraRef.current?.takePhoto({ 
-        flash: torch === "on" ? "on" : "off" 
-      });
-      
+      const photo = await cameraRef.current?.takePhoto({ flash: torch === "on" ? "on" : "off" });
       if (!photo) return;
-      
-      // Platform-specific URI formatting for cross-platform compatibility
       const uri = Platform.OS === "android" ? "file://" + photo.path : photo.path;
       setPhotoUri(uri);
     } catch (error) {
@@ -116,10 +67,7 @@ export default function CameraScreen() {
     }
   };
 
-  /**
-   * Handles photo confirmation and navigation to photo review screen
-   * Passes the captured photo URI as navigation parameter
-   */
+  // Navigate to photo review with the captured photo
   const handleUsePhoto = () => {
     if (photoUri) {
       navigation.navigate("PhotoReview", { photoUri });
@@ -128,7 +76,7 @@ export default function CameraScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Main camera view using react-native-vision-camera */}
+      {/* Live camera feed */}
       <Camera
         ref={cameraRef}
         style={StyleSheet.absoluteFill}
@@ -138,61 +86,34 @@ export default function CameraScreen() {
         torch={torch}
       />
 
-      {/* Overlay UI for camera controls and guidance */}
+      {/* Overlay UI */}
       <View style={[StyleSheet.absoluteFill, styles.overlay]}>
-        {/* Top control bar with navigation and camera options */}
         <View style={styles.topBar}>
-          {/* Back button to return to home screen */}
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()} 
-            style={styles.pill}
-            accessibilityLabel="Return to home screen"
-          >
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.pill}>
             <Text style={styles.pillText}>Back</Text>
           </TouchableOpacity>
 
-          {/* Torch toggle button for flash control */}
-          <TouchableOpacity 
-            onPress={() => setTorch(current => current === "on" ? "off" : "on")} 
-            style={styles.pill}
-            accessibilityLabel="Toggle torch/flashlight"
-          >
-            <Text style={styles.pillText}>
-              {torch === "on" ? "Torch On" : "Torch Off"}
-            </Text>
+          <TouchableOpacity onPress={() => setTorch(t => t === "on" ? "off" : "on")} style={styles.pill}>
+            <Text style={styles.pillText}>{torch === "on" ? "Torch On" : "Torch Off"}</Text>
           </TouchableOpacity>
 
-          {/* Camera flip button for front/back switching */}
-          <TouchableOpacity 
-            onPress={() => setFacing(current => current === "back" ? "front" : "back")} 
-            style={styles.pill}
-            accessibilityLabel="Switch between front and back camera"
-          >
+          <TouchableOpacity onPress={() => setFacing(f => f === "back" ? "front" : "back")} style={styles.pill}>
             <Text style={styles.pillText}>Flip</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Visual guide overlay for photo composition */}
+        {/* Reticle overlay */}
         <View pointerEvents="none" style={styles.reticle} />
 
-        {/* Bottom control area with shutter button */}
         <View style={styles.bottomBar}>
           <ShutterButton onPress={handleTakePhoto} />
         </View>
 
-        {/* Photo preview and confirmation interface */}
+        {/* Show captured photo preview */}
         {photoUri && (
           <View style={styles.previewDock}>
-            <Image 
-              source={{ uri: photoUri }} 
-              style={styles.preview} 
-              accessibilityLabel="Preview of captured photo"
-            />
-            <TouchableOpacity 
-              onPress={handleUsePhoto} 
-              style={[styles.pill, styles.useBtn]}
-              accessibilityLabel="Confirm and use captured photo"
-            >
+            <Image source={{ uri: photoUri }} style={styles.preview} />
+            <TouchableOpacity onPress={handleUsePhoto} style={[styles.pill, styles.useBtn]}>
               <Text style={styles.pillText}>Use Photo</Text>
             </TouchableOpacity>
           </View>
@@ -202,48 +123,27 @@ export default function CameraScreen() {
   );
 }
 
-// Comprehensive styling for camera interface and overlay elements
+// Styles for camera interface and overlays
 const styles = StyleSheet.create({
-  // Main container with black background for camera view
-  container: { 
-    flex: 1, 
-    backgroundColor: "black" 
+  container: { flex: 1, backgroundColor: "black" },
+  overlay: { justifyContent: "space-between" },
+  topBar: {
+    marginTop: 50,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  
-  // Overlay container for UI elements
-  overlay: { 
-    justifyContent: "space-between" 
+  bottomBar: {
+    marginBottom: 36,
+    alignItems: "center",
   },
-  
-  // Top control bar with camera options
-  topBar: { 
-    marginTop: 50, 
-    paddingHorizontal: 16, 
-    flexDirection: "row", 
-    justifyContent: "space-between" 
+  pill: {
+    backgroundColor: "rgba(0,0,0,0.5)",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
   },
-  
-  // Bottom area containing shutter button
-  bottomBar: { 
-    marginBottom: 36, 
-    alignItems: "center" 
-  },
-  
-  // Pill-shaped button styling for controls
-  pill: { 
-    backgroundColor: "rgba(0,0,0,0.5)", 
-    paddingHorizontal: 12, 
-    paddingVertical: 8, 
-    borderRadius: 999 
-  },
-  
-  // Text styling for pill buttons
-  pillText: { 
-    color: "white", 
-    fontWeight: "600" 
-  },
-  
-  // Visual guide overlay for photo composition
+  pillText: { color: "white", fontWeight: "600" },
   reticle: {
     alignSelf: "center",
     width: "70%",
@@ -252,8 +152,6 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.8)",
     borderRadius: 12,
   },
-  
-  // Photo preview dock with confirmation button
   previewDock: {
     position: "absolute",
     bottom: 110,
@@ -261,54 +159,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
-  
-  // Photo preview thumbnail
-  preview: { 
-    width: 96, 
-    height: 96, 
-    borderRadius: 8, 
-    borderWidth: 2, 
-    borderColor: "#fff" 
+  preview: {
+    width: 96,
+    height: 96,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: "#fff",
   },
-  
-  // Use photo button styling
-  useBtn: { 
-    alignSelf: "center" 
+  useBtn: { alignSelf: "center" },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+    gap: 12,
   },
-  
-  // Centered layout for permission and error screens
-  center: { 
-    flex: 1, 
-    justifyContent: "center", 
-    alignItems: "center", 
-    padding: 24, 
-    gap: 12 
+  title: { fontSize: 20, fontWeight: "700" },
+  msg: { color: "#555", textAlign: "center", marginBottom: 8 },
+  btn: {
+    backgroundColor: "#111827",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
   },
-  
-  // Title styling for permission screens
-  title: { 
-    fontSize: 20, 
-    fontWeight: "700" 
-  },
-  
-  // Message text styling
-  msg: { 
-    color: "#555", 
-    textAlign: "center", 
-    marginBottom: 8 
-  },
-  
-  // Button styling for permission actions
-  btn: { 
-    backgroundColor: "#111827", 
-    paddingHorizontal: 14, 
-    paddingVertical: 10, 
-    borderRadius: 10 
-  },
-  
-  // Button text styling
-  btnText: { 
-    color: "white", 
-    fontWeight: "600" 
-  }
+  btnText: { color: "white", fontWeight: "600" },
 });
