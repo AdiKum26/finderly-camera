@@ -6,6 +6,6 @@
 export const VISION_CONFIG = {
   GOOGLE_CLOUD: {
     BASE_URL: 'https://vision.googleapis.com/v1/images:annotate',
-    API_KEY: 'AIzaSyB8NRWv7oY5z-3TjR9hvSlS46_KfNa2lzs', // ⚠️ REPLACE WITH YOUR ACTUAL API KEY
+    API_KEY: 'YOUR_GOOGLE_CLOUD_VISION_API_KEY_HERE', // ⚠️ REPLACE WITH YOUR ACTUAL API KEY
   },
 };  
